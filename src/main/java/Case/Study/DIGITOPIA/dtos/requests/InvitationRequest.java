@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class InviationRequest {
+public class InvitationRequest {
     private Long userId;
     private Long organizationId;
     private String invitationMessage;
