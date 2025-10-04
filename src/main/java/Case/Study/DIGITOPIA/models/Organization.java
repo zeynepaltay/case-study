@@ -22,7 +22,7 @@ public class Organization {
     private UUID ID;
     private String name;
     private String normalizedName;
-    private String registeryNumber;
+    private String registryNumber;
     private String email;
     private Integer companySize;
     private Integer foundationYear;
