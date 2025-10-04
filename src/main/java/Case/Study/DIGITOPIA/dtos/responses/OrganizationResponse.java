@@ -17,7 +17,7 @@ import java.util.UUID;
 public class OrganizationResponse {
     private String name;
     private String normalizedName;//???
-    private String registeryNumber;
+    private String registryNumber;
     private String email;
     private Integer companySize;
     private Integer foundationYear;
