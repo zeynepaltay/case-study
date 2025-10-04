@@ -3,12 +3,21 @@ package Case.Study.DIGITOPIA.models;
 import Case.Study.DIGITOPIA.models.enums.Role;
 import Case.Study.DIGITOPIA.models.enums.UserStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "user")
 public class User {
     @Id

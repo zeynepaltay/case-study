@@ -2,10 +2,19 @@ package Case.Study.DIGITOPIA.models;
 
 import Case.Study.DIGITOPIA.models.enums.InvitationStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.UUID;
+
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "invitation")
 public class Invitation {
     @Id
