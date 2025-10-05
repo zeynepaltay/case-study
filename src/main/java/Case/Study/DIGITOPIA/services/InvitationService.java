@@ -1,4 +1,4 @@
 package Case.Study.DIGITOPIA.services;
 
-public class InvitationService {
+public interface InvitationService {
 }
