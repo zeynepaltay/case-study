@@ -13,5 +13,4 @@ public interface UserService {
     Set<OrganizationResponse> getOrganizationsByUserId(UUID userId);
     Page<UserResponse> searchUserByNormalizedName(String normalizedName, Pageable pageable);
     Optional<UserResponse> searchByEmail(String email);
-
 }
