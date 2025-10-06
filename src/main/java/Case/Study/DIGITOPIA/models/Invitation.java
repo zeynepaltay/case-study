@@ -18,6 +18,7 @@ import java.util.UUID;
 @Table(name = "invitation")
 public class Invitation {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID ID;
     private Long userId;
     private Long organizationId;

@@ -19,6 +19,7 @@ import java.util.UUID;
 @Table(name = "organization")
 public class Organization {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID ID;
     private String name;
     private String normalizedName;
