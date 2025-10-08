@@ -29,15 +29,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<UserResponse> createUser(UserRequest request){
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalStateException("User with this email already exists");//TODO bu update de lazım olabilir
+        }
         User user = userMapper.toEntity(request);
         User saved = userRepository.save(user);
-        //TODO herhangi bi error throw var mı
         return Optional.ofNullable(userMapper.toResponse(saved));
     }
 
     @Override
     public Optional<UserResponse> updateUser(UUID id, UserRequest request){
-        User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        User user = userRepository.findById(id).
+                orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+
         userMapper.toEntity(request);
         User saved = userRepository.save(user);
         return Optional.ofNullable(userMapper.toResponse(saved));
@@ -52,8 +56,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserResponse> searchUserByNormalizedName(String normalizedName, Pageable pageable) {
-        String searchKey = normalizedName != null ? normalizedName.toLowerCase() : null;
-        //TODO validasyonlar buraya çeklilcek
+
+        String searchKey = null;
+        if (normalizedName != null) {
+            searchKey = normalizedName
+                    .toLowerCase()
+                    .replaceAll("[^\\p{ASCII}]", "")
+                    .replaceAll("[^a-z0-9]", "");
+        }
 
         Page<User> usersPage = userRepository.findByNormalizedNameContainingIgnoreCase(searchKey, pageable);
 
@@ -66,13 +76,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<UserResponse> searchByEmail(String email) {
-        //TODO validasyon eksik
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Email must not be null or blank");
+        }
+
+        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
 
         return Optional.ofNullable(userMapper.toResponse(user));
     }
-    //TODO delete
 
     @Override
     @Transactional
