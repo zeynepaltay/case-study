@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -30,8 +30,8 @@ public class User {
     private String normalizedName;
     @Enumerated(EnumType.STRING)
     private Role role;
-    private Date createdAt;
-    private Date updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private UUID createdBy;
     private UUID updatedBy;
     @ManyToMany(mappedBy = "users")

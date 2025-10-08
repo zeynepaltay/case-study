@@ -6,8 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
-import java.util.HashSet;
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,12 +22,13 @@ public class Organization {
     private UUID ID;
     private String name;
     private String normalizedName;
+    @Column(name = "organization_id", nullable = false, unique = true, length = 20)// Aynı classNumber ile ikinci kayıt eklenmeye çalışılırsa DB hata fırlatır
     private String registryNumber;
     private String email;
     private Integer companySize;
     private Integer foundationYear;
-    private Date createdAt;
-    private Date updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private UUID createdBy;
     private UUID updatedBy;
     @ManyToMany
@@ -37,5 +37,5 @@ public class Organization {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "organization_id")
     )
-    private Set<User> user = new HashSet<>();
+    private Set<User> user;
 }
