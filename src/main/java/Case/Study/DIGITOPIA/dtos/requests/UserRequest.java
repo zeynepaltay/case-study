@@ -16,14 +16,12 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class UserRequest {
+    @NotBlank(message = "Email must not be blank")
     private String email;
     private UserStatus userStatus;
     @NotBlank(message = "Full name is required")
     @Pattern(regexp = "[A-Za-z]+$", message = "Must contain only letters")
     private String fullName;
-    @NotBlank(message = "Normalized name is required")
-    @Pattern(regexp = "[a-z0-9]+$", message = "Must contain only letters and numbers")
-    private String normalizedName; // TODO bunu silcem full nameden kendim üretip işl,ycem sonra
     private Role role;
     private Set<Organization> organization = new HashSet<>();
 }

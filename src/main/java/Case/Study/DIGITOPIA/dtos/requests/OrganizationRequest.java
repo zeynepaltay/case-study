@@ -16,12 +16,11 @@ public class OrganizationRequest {
     @NotBlank(message = "Organization name can not be left blank")
     @Pattern(regexp = "[A-Za-z0-9]+$", message = "Must contain only letters and numbers")
     private String name;
-    @NotBlank(message = "Normalized name can not be left blank")
-    @Pattern(regexp = "[a-z0-9]+$", message = "Must contain only letters and numbers")
-    private String normalizedName;// TODO bunu silcem full nameden kendim üretip işliycem sonra
+    // TODO bunu silcem full nameden kendim üretip işliycem sonra
     @NotBlank(message = "Registry number can not be left blank")
     @Pattern(regexp = "[A-Za-z0-9]+$", message = "Must contain only letters and numbers")
     private String registryNumber;
+    @NotBlank(message = "Email must not be blank")
     private String email;
     private Integer companySize;
     private Integer foundationYear;
