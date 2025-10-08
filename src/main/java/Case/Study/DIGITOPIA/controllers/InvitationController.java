@@ -23,11 +23,30 @@ public class InvitationController {
         return ResponseEntity.ok(invitationResponse);
     }
 
+    @GetMapping("/pending-check")
+    public ResponseEntity<Boolean> checkPendingInvitation(@RequestParam UUID userId, @RequestParam UUID organizationId
+    ) {
+        boolean hasPending = invitationService.pendingInvitationCheck(userId, organizationId);
+        return ResponseEntity.ok(hasPending);
+    }
+
     //bu ve user daki delete e bi bakalım iksiini farklı
     @DeleteMapping("/{id}")
     public ResponseEntity<InvitationResponse> deleteInvitation(@PathVariable("id") UUID invitationId) {
         invitationService.deleteInvitation(invitationId);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "send-invitation")
+    public ResponseEntity<Optional<InvitationResponse>> sendInvitation(@Valid @RequestBody InvitationRequest request){
+        Optional<InvitationResponse> invitationResponse = invitationService.sendInvitation(request);
+        return ResponseEntity.ok(invitationResponse);
+    }
+
+    @PutMapping("update-invitation")
+    public ResponseEntity<Optional<InvitationResponse>> updateInvitation(@RequestBody UUID id,@Valid @RequestBody  InvitationRequest request){
+        Optional<InvitationResponse> invitationResponse = invitationService.updateInvitation(id, request);
+        return ResponseEntity.ok(invitationResponse);
     }
 
 
