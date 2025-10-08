@@ -18,9 +18,9 @@ public class InvitationScheduler {
 
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional
-    public void scheduleInvitation() {
+    public void scheduleInvitation() {//TODO bunu çağırmam gerekiyo mu bak
     LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
-    List<Invitation> oldInvitations = invitationRepository.findByCreatedAtBeforeAndStatusNot(sevenDaysAgo, InvitationStatus.EXPIRED);
+    List<Invitation> oldInvitations = invitationRepository.findByCreatedAtBeforeAndInvitationStatusNot(sevenDaysAgo, InvitationStatus.EXPIRED);
     oldInvitations.forEach(invitation -> invitation.setInvitationStatus(InvitationStatus.EXPIRED));
     invitationRepository.saveAll(oldInvitations);
     System.out.println(oldInvitations.size() + " invitation(s) updated to EXPIRED at " + LocalDateTime.now());
