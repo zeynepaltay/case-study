@@ -11,4 +11,5 @@ public interface InvitationService {
     boolean pendingInvitationCheck(UUID userId, UUID organizationId);
     void deleteInvitation(UUID invitationId);
     Optional<InvitationResponse> sendInvitation(InvitationRequest request);
+    Optional<InvitationResponse> updateInvitation(UUID id, InvitationRequest request);
 }
