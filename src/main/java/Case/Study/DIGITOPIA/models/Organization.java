@@ -10,8 +10,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -28,8 +27,9 @@ public class Organization {
     @Column(nullable = false)
     private String name;
     private String normalizedName;
-    @Column(name = "organization_id", nullable = false, unique = true, length = 20)// Aynı classNumber ile ikinci kayıt eklenmeye çalışılırsa DB hata fırlatır
+    @Column(name = "organization_id", nullable = false, unique = true, length = 20)
     private String registryNumber;
+    @Column(nullable = false, unique = true)
     private String email;
     private Integer companySize;
     private Integer foundationYear;
@@ -43,8 +43,8 @@ public class Organization {
     @ManyToMany
     @JoinTable(
             name = "organization_user",
-            joinColumns = @JoinColumn(name = "organization_id"), // Organization FK
-            inverseJoinColumns = @JoinColumn(name = "user_id") // User FK
+            joinColumns = @JoinColumn(name = "organization_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private Set<User> users = new HashSet<>();
+    private List<User> users;
 }

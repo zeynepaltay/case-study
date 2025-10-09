@@ -12,8 +12,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -44,5 +43,5 @@ public class User {
     @LastModifiedBy
     private UUID updatedBy;
     @ManyToMany(mappedBy = "users")
-    private Set<Organization> organization = new HashSet<>();
+    private List<Organization> organization;
 }
