@@ -13,7 +13,7 @@ import java.util.UUID;
 @Repository
 public interface OrganizationRepository extends JpaRepository<Organization, UUID> {
     boolean existsByRegistryNumber(String registryNumber);
-    Page<Organization> findByRegistryNumberContainingIgnoreCase(String registryNumber, Pageable pageable);//TODO hata var
+    Page<Organization> findByRegistryNumberContainingIgnoreCase(String registryNumber, Pageable pageable);
     @Query("""
         SELECT o FROM Organization o
         WHERE (:normalizedName IS NULL OR LOWER(o.normalizedName) LIKE LOWER(CONCAT('%', :normalizedName, '%')))
