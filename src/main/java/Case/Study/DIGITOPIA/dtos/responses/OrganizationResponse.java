@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Builder
@@ -16,5 +16,5 @@ public class OrganizationResponse {
     private String email;
     private Integer companySize;
     private Integer foundationYear;
-    private Set<User> user;
+    private List<User> user;
 }

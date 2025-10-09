@@ -1,11 +1,12 @@
 package Case.Study.DIGITOPIA.dtos.requests;
 
-import Case.Study.DIGITOPIA.models.User;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
-import java.util.Set;
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -21,8 +22,9 @@ public class OrganizationRequest {
     @Pattern(regexp = "[A-Za-z0-9]+$", message = "Must contain only letters and numbers")
     private String registryNumber;
     @NotBlank(message = "Email must not be blank")
+    @Email(message = "Email should be valid")
     private String email;
     private Integer companySize;
     private Integer foundationYear;
-    private Set<User> user;
+    private List<UUID> userId;
 }

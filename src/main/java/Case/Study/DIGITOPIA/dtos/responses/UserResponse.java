@@ -7,15 +7,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Builder
 @AllArgsConstructor
 public class UserResponse {
     private String email;
-    private UserStatus userStatus; //bu silinmeli mi? kendi mi seçiyo yo bence silinmeli
+    private UserStatus userStatus;
     private String fullName;
     private Role role;
-    private Set<Organization> organization;
+    private List<Organization> organization;
 }
