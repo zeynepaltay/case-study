@@ -11,8 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -22,7 +22,7 @@ public class OrganizationController {
     private final OrganizationService organizationService;
 
     @PostMapping(value = "create-organization")
-    public ResponseEntity<Optional<OrganizationResponse>> createOrganization(@Valid @RequestParam OrganizationRequest request){
+    public ResponseEntity<Optional<OrganizationResponse>> createOrganization(@Valid @RequestBody OrganizationRequest request){
         Optional<OrganizationResponse> organizationResponse = organizationService.createOrganization(request);
         return ResponseEntity.ok(organizationResponse);
     }
@@ -34,13 +34,13 @@ public class OrganizationController {
     }
 
     @GetMapping(value = "/users-lists")
-    public ResponseEntity<Set<UserResponse>> getUsersByOrganizationId(@PathVariable UUID organizationId) {
-        Set<UserResponse> userResponse = organizationService.getUsersByOrganizationId(organizationId);
+    public ResponseEntity<List<UserResponse>> getUsersByOrganizationId(@RequestParam  UUID organizationId) {
+        List<UserResponse> userResponse = organizationService.getUsersByOrganizationId(organizationId);
         return ResponseEntity.ok(userResponse);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<OrganizationResponse> deleteOrganization(@PathVariable("id") UUID organizationId) {//TODO pathvariable??
+    public ResponseEntity<OrganizationResponse> deleteOrganization(@PathVariable("id") UUID organizationId) {
         organizationService.deleteOrganization(organizationId);
         return ResponseEntity.ok().build();
     }
@@ -53,7 +53,7 @@ public class OrganizationController {
 
     @GetMapping("/search-multiple")
     public ResponseEntity<Page<OrganizationResponse>> searchOrganizations
-            (@RequestParam(required = false) String name,
+            (@RequestParam(required = false) String name,//TODO bunlar required false olmalı mı bak
             @RequestParam(required = false) Integer foundationYear,
             @RequestParam(required = false) Integer companySize,
             Pageable pageable) {

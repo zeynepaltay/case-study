@@ -30,9 +30,8 @@ public class InvitationController {
         return ResponseEntity.ok(hasPending);
     }
 
-    //bu ve user daki delete e bi bakalım iksiini farklı
     @DeleteMapping("/{id}")
-    public ResponseEntity<InvitationResponse> deleteInvitation(@PathVariable("id") UUID invitationId) {
+    public ResponseEntity<Void> deleteInvitation(@PathVariable("id") UUID invitationId) {
         invitationService.deleteInvitation(invitationId);
         return ResponseEntity.ok().build();
     }
@@ -44,10 +43,8 @@ public class InvitationController {
     }
 
     @PutMapping("update-invitation")
-    public ResponseEntity<Optional<InvitationResponse>> updateInvitation(@RequestBody UUID id,@Valid @RequestBody  InvitationRequest request){
+    public ResponseEntity<Optional<InvitationResponse>> updateInvitation(@RequestParam UUID id,@Valid @RequestBody InvitationRequest request){
         Optional<InvitationResponse> invitationResponse = invitationService.updateInvitation(id, request);
         return ResponseEntity.ok(invitationResponse);
     }
-
-
 }

@@ -11,8 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -22,20 +22,20 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping(value = "create-user")
-    public ResponseEntity<Optional<UserResponse>> createUser(@Valid @RequestParam UserRequest request){
+    public ResponseEntity<Optional<UserResponse>> createUser(@Valid @RequestBody UserRequest request){
         Optional<UserResponse> userResponse = userService.createUser(request);
         return ResponseEntity.ok(userResponse);
     }
 
     @PutMapping(value = "update-user")
-    public ResponseEntity<Optional<UserResponse>> updateUser(@RequestParam UUID id,@Valid @RequestParam UserRequest request){
+    public ResponseEntity<Optional<UserResponse>> updateUser(@RequestParam UUID id,@Valid @RequestBody UserRequest request){
         Optional<UserResponse> userResponse = userService.updateUser(id, request);
         return ResponseEntity.ok(userResponse);
     }
 
     @GetMapping(value = "/organization-lists")
-    public ResponseEntity<Set<OrganizationResponse>> getOrganizationsByUserId(@RequestParam UUID userId) {
-        Set<OrganizationResponse> organizationResponse = userService.getOrganizationsByUserId(userId);
+    public ResponseEntity<List<OrganizationResponse>> getOrganizationsByUserId(@RequestParam UUID userId) {
+        List<OrganizationResponse> organizationResponse = userService.getOrganizationsByUserId(userId);
         return ResponseEntity.ok(organizationResponse);
     }
 
@@ -51,10 +51,9 @@ public class UserController {
         return ResponseEntity.ok(userResponse);
     }
 
-    //bunu farklı yaptım invitationdaki mi daha doğru bu mu?
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable("id") UUID userId) {
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") UUID userId) {
         userService.deleteUser(userId);
-        return ResponseEntity.ok("User deleted successfully.");
+        return ResponseEntity.ok().build();
     }
 }
