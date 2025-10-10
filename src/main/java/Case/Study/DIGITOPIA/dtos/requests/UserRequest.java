@@ -24,5 +24,5 @@ public class UserRequest {
     @Pattern(regexp = "[A-Za-z\\s]+$", message = "Must contain only letters")
     private String fullName;
     private Role role;
-    private List<UUID> organizationid;
+    private List<UUID> organizationId;
 }
