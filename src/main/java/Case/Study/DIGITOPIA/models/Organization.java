@@ -27,7 +27,7 @@ public class Organization {
     @Column(nullable = false)
     private String name;
     private String normalizedName;
-    @Column(name = "organization_id", nullable = false, unique = true, length = 20)
+    @Column(nullable = false, unique = true, length = 20)
     private String registryNumber;
     @Column(nullable = false, unique = true)
     private String email;
