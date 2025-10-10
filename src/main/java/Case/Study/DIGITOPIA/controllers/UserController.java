@@ -6,6 +6,7 @@ import Case.Study.DIGITOPIA.dtos.responses.UserResponse;
 import Case.Study.DIGITOPIA.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,7 @@ public class UserController {
     }
 
     @GetMapping(value = "search-normalized-name")
-    public ResponseEntity<Page<UserResponse>> searchUserByNormalizedName(@RequestParam String normalizedName, Pageable pageable){
+    public ResponseEntity<Page<UserResponse>> searchUserByNormalizedName(@RequestParam String normalizedName, @ParameterObject Pageable pageable){
         Page<UserResponse> userResponse = userService.searchUserByNormalizedName(normalizedName, pageable);
         return ResponseEntity.ok(userResponse);
     }
