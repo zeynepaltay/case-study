@@ -5,7 +5,9 @@ import Case.Study.DIGITOPIA.dtos.responses.OrganizationResponse;
 import Case.Study.DIGITOPIA.dtos.responses.UserResponse;
 import Case.Study.DIGITOPIA.mappers.OrganizationMapper;
 import Case.Study.DIGITOPIA.mappers.UserMapper;
+import Case.Study.DIGITOPIA.models.Organization;
 import Case.Study.DIGITOPIA.models.User;
+import Case.Study.DIGITOPIA.repositories.OrganizationRepository;
 import Case.Study.DIGITOPIA.repositories.UserRepository;
 import Case.Study.DIGITOPIA.services.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,9 +18,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,32 +31,85 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final OrganizationMapper organizationMapper;
     private final UserMapper userMapper;
+    private final OrganizationRepository organizationRepository;
 
     @Override
     public Optional<UserResponse> createUser(UserRequest request){
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalStateException("User with this email already exists");//TODO bu update de lazım olabilir
+            throw new IllegalStateException("User with this email already exists");
         }
         User user = userMapper.toEntity(request);
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
         User saved = userRepository.save(user);
+
         return Optional.ofNullable(userMapper.toResponse(saved));
     }
 
     @Override
-    public Optional<UserResponse> updateUser(UUID id, UserRequest request){
-        User user = userRepository.findById(id).
-                orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+    @Transactional
+    public Optional<UserResponse> updateUser(UUID id, UserRequest request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
 
-        userMapper.toEntity(request);
+        List<Organization> organizations = organizationRepository.findAllById(request.getOrganizationId());
+        String newEmail = request.getEmail();
+
+        if (newEmail == null || newEmail.isBlank()) {
+            throw new IllegalArgumentException("Email cannot be blank");
+        }
+        if (!newEmail.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")) {
+            throw new IllegalArgumentException("Email format is invalid");
+        }
+
+        if (!user.getEmail().equals(newEmail) && userRepository.existsByEmail(newEmail)) {
+            throw new IllegalStateException("Email already exists");
+        }
+
+        List<Organization> organization = organizationRepository.findAllById(request.getOrganizationId());
+
+        if (organizations.size() != request.getOrganizationId().size()) {
+            throw new IllegalArgumentException("One or more organization IDs are invalid");
+        }
+
+        user.setEmail(newEmail);
+        user.setFullName(request.getFullName());
+        user.setNormalizedName(request.getFullName().toLowerCase().replaceAll("\\s+", ""));
+        user.setUserStatus(request.getUserStatus());
+        user.setRole(request.getRole());
+        user.setOrganization(organization);
+        user.setUpdatedAt(LocalDateTime.now());
+
         User saved = userRepository.save(user);
         return Optional.ofNullable(userMapper.toResponse(saved));
     }
 
+
     @Override
-    public Set<OrganizationResponse> getOrganizationsByUserId(UUID userId) {
+    @Transactional
+    public List<OrganizationResponse> getOrganizationsByUserId(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-        return organizationMapper.toResponseSet(user.getOrganization());
+
+        List<Organization> organizations = user.getOrganization();
+
+        if (organizations == null || organizations.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return organizations.stream()
+                .map(org -> {
+                    OrganizationResponse response = organizationMapper.toResponse(org);
+
+                    List<UUID> allUserIdsInOrg = org.getUsers().stream()
+                            .map(User::getID)
+                            .collect(Collectors.toList());
+
+                    response.setUserId(allUserIdsInOrg);
+
+                    return response;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
