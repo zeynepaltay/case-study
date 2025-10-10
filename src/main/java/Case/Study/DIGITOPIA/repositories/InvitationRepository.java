@@ -19,10 +19,12 @@ public interface InvitationRepository extends JpaRepository<Invitation, UUID> {
     FROM Invitation i
     WHERE i.userId = :userId
       AND i.organizationId = :organizationId
-      AND i.invitationStatus = :status
-    """)
-    boolean pendingInvitationCheck(@Param("userId") UUID userId,
-                                   @Param("organizationId") UUID organizationId,
-                                   @Param("invitationStatus") InvitationStatus invitationStatus);
+      AND i.invitationStatus = :invitationStatus
+""")
+    boolean pendingInvitationCheck(
+            @Param("userId") UUID userId,
+            @Param("organizationId") UUID organizationId,
+            @Param("invitationStatus") InvitationStatus invitationStatus
+    );
     Optional<Invitation> findByUserIdAndOrganizationId(UUID userId, UUID organizationId);
 }
