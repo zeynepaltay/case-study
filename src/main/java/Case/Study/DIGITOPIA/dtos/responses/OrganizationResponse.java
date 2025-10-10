@@ -1,13 +1,15 @@
 package Case.Study.DIGITOPIA.dtos.responses;
 
-import Case.Study.DIGITOPIA.models.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 public class OrganizationResponse {
@@ -16,5 +18,5 @@ public class OrganizationResponse {
     private String email;
     private Integer companySize;
     private Integer foundationYear;
-    private List<User> user;
+    private List<UUID> userId;
 }
