@@ -25,7 +25,6 @@ public class InvitationServiceImpl implements InvitationService {
     @Override
     public Optional<InvitationResponse> createInvitation(InvitationRequest request){
         Invitation invitation = invitationMapper.toEntity(request);
-        // TODO throw error var mı
         invitation.setCreatedAt(LocalDateTime.now());
         invitation.setUpdatedAt(LocalDateTime.now());
         Invitation saved = invitationRepository.save(invitation);
@@ -62,7 +61,7 @@ public class InvitationServiceImpl implements InvitationService {
 
         Invitation saved = invitationRepository.save(invitation);
         return Optional.of(invitationMapper.toResponse(saved));
-    }//TODO düzgün mü
+    }
 
     @Override
     @Transactional
@@ -70,10 +69,10 @@ public class InvitationServiceImpl implements InvitationService {
         UUID userId = request.getUserId();
         UUID organizationId = request.getOrganizationId();
 
-        boolean existingOpt = invitationRepository.pendingInvitationCheck(userId, organizationId, InvitationStatus.PENDING);
+        boolean alreadyExists = invitationRepository.pendingInvitationCheck(userId, organizationId, InvitationStatus.PENDING);
 
-        if (existingOpt) {
-            throw new EntityExistsException("Invitation with id " + request.getUserId() + " already exists");
+        if (alreadyExists) {
+            throw new EntityExistsException("A pending invitation already exists for this user and organization");
         }
 
         Invitation invitation = invitationMapper.toEntity(request);
