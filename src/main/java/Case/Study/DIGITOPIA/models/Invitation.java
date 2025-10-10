@@ -28,7 +28,7 @@ public class Invitation {
     private UUID userId;
     @Column(name = "organization_id", nullable = false)
     private UUID organizationId;
-    @Column(name = "invitation_message", nullable = false, length = 100)
+    @Column(name = "invitation_message", nullable = false, length = 300)
     private String invitationMessage;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
