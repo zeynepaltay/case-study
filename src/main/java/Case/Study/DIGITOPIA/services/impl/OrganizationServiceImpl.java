@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -32,14 +33,26 @@ public class OrganizationServiceImpl implements OrganizationService {
     private final UserRepository userRepository;
 
     @Override
-    public Optional<OrganizationResponse> createOrganization(OrganizationRequest request){
-        if(organizationRepository.existsByRegistryNumber(request.getRegistryNumber())){
+    @Transactional
+    public Optional<OrganizationResponse> createOrganization(OrganizationRequest request) {
+        if (organizationRepository.existsByRegistryNumber(request.getRegistryNumber())) {
             throw new EntityExistsException("That registry number already exists");
         }
 
         Organization organization = organizationMapper.toEntity(request);
         organization.setCreatedAt(LocalDateTime.now());
         organization.setUpdatedAt(LocalDateTime.now());
+
+        List<UUID> userIds = request.getUserId();
+
+        if (userIds != null && !userIds.isEmpty()) {
+            List<User> users = userRepository.findAllById(userIds);
+            if (users.size() != userIds.size()) {
+                throw new EntityNotFoundException("One or more users could not be found");
+            }
+            organization.setUsers(users);
+        }
+
         Organization savedOrganization = organizationRepository.save(organization);
         return Optional.ofNullable(organizationMapper.toResponse(savedOrganization));
     }
@@ -55,19 +68,21 @@ public class OrganizationServiceImpl implements OrganizationService {
             throw new IllegalStateException("That registry number already exists");
         }
 
-        List<User> user = userRepository.findAllById(request.getUserId());
+
+        List<User> users = userRepository.findAllById(request.getUserId());
 
         organization.setName(request.getName());
-        organization.setUpdatedAt(LocalDateTime.now());
-        organization.setUsers(user);
+        organization.setRegistryNumber(request.getRegistryNumber());
+        organization.setEmail(request.getEmail());
         organization.setCompanySize(request.getCompanySize());
         organization.setFoundationYear(request.getFoundationYear());
-        organization.setRegistryNumber(request.getRegistryNumber());
-        organization.setEmail(request.getEmail()); // email unique olmalı, istersen ekstra kontrol ekle
         organization.setUpdatedAt(LocalDateTime.now());
 
-        Organization saved = organizationRepository.save(organization);
-        return Optional.ofNullable(organizationMapper.toResponse(saved));
+        organization.setUsers(users);
+
+        Organization savedOrganization = organizationRepository.save(organization);
+
+        return Optional.ofNullable(organizationMapper.toResponse(savedOrganization));
     }
 
     @Override
@@ -84,7 +99,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (registryNumber != null) {
             searchKey = registryNumber
                     .replaceAll("[^a-zA-Z0-9]", "")
-                    .toLowerCase();//TODO bu kalmalı mı?
+                    .toLowerCase();
         }
 
         Page<Organization> organizationPage = organizationRepository
@@ -98,21 +113,22 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public Page<OrganizationResponse> searchOrganizations(String name, Integer foundationYear, Integer companySize, Pageable pageable){
+    public Page<OrganizationResponse> searchOrganizations(
+            String name, Integer foundationYear, Integer companySize, Pageable pageable) {
 
         String normalizedName = null;
-        if (name != null) {
-            normalizedName = name
-                    .toLowerCase()                  //TODO kalsın mı ya lowercase
-                    .replaceAll("[^a-z0-9]", "");   // sadece alphanumeric (ASCII only)
+        if (name != null && !name.isBlank()) {
+            normalizedName = name.toLowerCase().replaceAll("[^a-z0-9]", "");
         }
 
+        Pageable safePageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+
         Page<Organization> organizationPage =
-                organizationRepository.searchOrganizations(normalizedName, foundationYear, companySize, pageable);
+                organizationRepository.searchOrganizations(normalizedName, foundationYear, companySize, safePageable);
 
         return new PageImpl<>(
                 organizationMapper.toResponseList(organizationPage.getContent()),
-                pageable,
+                safePageable,
                 organizationPage.getTotalElements()
         );
     }
