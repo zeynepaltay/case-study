@@ -34,16 +34,32 @@ public class UserServiceImpl implements UserService {
     private final OrganizationRepository organizationRepository;
 
     @Override
-    public Optional<UserResponse> createUser(UserRequest request){
+    public Optional<UserResponse> createUser(UserRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalStateException("User with this email already exists");
         }
+
         User user = userMapper.toEntity(request);
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
-        User saved = userRepository.save(user);
 
+        user.setNormalizedName(normalizeName(request.getFullName()));
+
+        User saved = userRepository.save(user);
         return Optional.ofNullable(userMapper.toResponse(saved));
+    }
+
+    private String normalizeName(String input) {
+        if (input == null) return null;
+
+        String normalized = java.text.Normalizer.normalize(input, java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+
+        normalized = normalized.toLowerCase();
+
+        normalized = normalized.replaceAll("[^a-z0-9]", "");
+
+        return normalized;
     }
 
     @Override
@@ -66,24 +82,23 @@ public class UserServiceImpl implements UserService {
             throw new IllegalStateException("Email already exists");
         }
 
-        List<Organization> organization = organizationRepository.findAllById(request.getOrganizationId());
-
         if (organizations.size() != request.getOrganizationId().size()) {
             throw new IllegalArgumentException("One or more organization IDs are invalid");
         }
 
         user.setEmail(newEmail);
         user.setFullName(request.getFullName());
-        user.setNormalizedName(request.getFullName().toLowerCase().replaceAll("\\s+", ""));
+
+        user.setNormalizedName(normalizeName(request.getFullName()));
+
         user.setUserStatus(request.getUserStatus());
         user.setRole(request.getRole());
-        user.setOrganization(organization);
+        user.setOrganization(organizations);
         user.setUpdatedAt(LocalDateTime.now());
 
         User saved = userRepository.save(user);
         return Optional.ofNullable(userMapper.toResponse(saved));
     }
-
 
     @Override
     @Transactional
