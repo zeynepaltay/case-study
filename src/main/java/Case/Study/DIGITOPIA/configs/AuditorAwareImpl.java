@@ -13,7 +13,9 @@ public class AuditorAwareImpl implements AuditorAware<UUID> {
     @Override
     public Optional<UUID> getCurrentAuditor() {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        if (requestAttributes == null) return Optional.empty();
+        if (requestAttributes == null) {
+            return Optional.of(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        }
 
         HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
         String userIdHeader = request.getHeader("X-User-Id");
@@ -22,9 +24,11 @@ public class AuditorAwareImpl implements AuditorAware<UUID> {
             try {
                 return Optional.of(UUID.fromString(userIdHeader));
             } catch (IllegalArgumentException e) {
-                return Optional.empty();
+                return Optional.of(UUID.fromString("00000000-0000-0000-0000-000000000001"));
             }
         }
-        return Optional.empty();
+
+        return Optional.of(UUID.fromString("00000000-0000-0000-0000-000000000001"));
     }
 }
+
