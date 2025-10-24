@@ -34,6 +34,7 @@ public class Organization {
     private Integer companySize;
     private Integer foundationYear;
     private LocalDateTime createdAt;
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
     @CreatedBy
     @Column(updatable = false)

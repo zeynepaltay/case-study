@@ -31,6 +31,7 @@ public class Invitation {
     @Column(name = "invitation_message", nullable = false, length = 300)
     private String invitationMessage;
     private LocalDateTime createdAt;
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
     @CreatedBy
     @Column(updatable = false)
