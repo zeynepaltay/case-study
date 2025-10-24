@@ -2,6 +2,8 @@ package Case.Study.DIGITOPIA.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -20,6 +22,16 @@ public class GlobalExceptionHandler {
         if (path.startsWith("/v3/api-docs") || path.startsWith("/swagger-ui")) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", ex.getMessage()));
+        }
+
+        if (ex instanceof MethodArgumentNotValidException validationEx) {
+            String message = validationEx.getBindingResult()
+                    .getAllErrors()
+                    .stream()
+                    .findFirst()
+                    .map(ObjectError::getDefaultMessage)
+                    .orElse("Validation error");
+            return ResponseEntity.badRequest().body(Map.of("error", message));
         }
 
         Map<String, String> error = new HashMap<>();
