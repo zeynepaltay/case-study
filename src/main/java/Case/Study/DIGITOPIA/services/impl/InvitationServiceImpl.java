@@ -22,6 +22,7 @@ import java.util.UUID;
 public class InvitationServiceImpl implements InvitationService {
     private final InvitationRepository invitationRepository;
     private final InvitationMapper invitationMapper;
+
     @Override
     public Optional<InvitationResponse> createInvitation(InvitationRequest request){
         Invitation invitation = invitationMapper.toEntity(request);

@@ -43,6 +43,8 @@ public class OrganizationServiceImpl implements OrganizationService {
         organization.setCreatedAt(LocalDateTime.now());
         organization.setUpdatedAt(LocalDateTime.now());
 
+        organization.setNormalizedName(normalizeName(request.getName()));
+
         List<UUID> userIds = request.getUserId();
 
         if (userIds != null && !userIds.isEmpty()) {
@@ -55,6 +57,19 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         Organization savedOrganization = organizationRepository.save(organization);
         return Optional.ofNullable(organizationMapper.toResponse(savedOrganization));
+    }
+
+    private String normalizeName(String input) {
+        if (input == null) return null;
+
+        String normalized = java.text.Normalizer.normalize(input, java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+
+        normalized = normalized.toLowerCase();
+
+        normalized = normalized.replaceAll("[^a-z0-9]", "");
+
+        return normalized;
     }
 
     @Override
@@ -72,6 +87,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         List<User> users = userRepository.findAllById(request.getUserId());
 
         organization.setName(request.getName());
+        organization.setNormalizedName(normalizeName(request.getName()));
         organization.setRegistryNumber(request.getRegistryNumber());
         organization.setEmail(request.getEmail());
         organization.setCompanySize(request.getCompanySize());
